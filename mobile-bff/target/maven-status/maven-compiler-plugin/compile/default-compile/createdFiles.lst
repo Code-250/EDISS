@@ -1,0 +1,10 @@
+com/bookstore/mobilebff/controller/BookController.class
+com/bookstore/mobilebff/filter/JwtAuthenticationFilter.class
+com/bookstore/mobilebff/MobileBffApplication.class
+com/bookstore/mobilebff/util/JwtUtil.class
+com/bookstore/mobilebff/service/CustomerService.class
+com/bookstore/mobilebff/service/BookService.class
+com/bookstore/mobilebff/dto/BookDTO.class
+com/bookstore/mobilebff/dto/CustomerDTO.class
+com/bookstore/mobilebff/controller/CustomerController.class
+com/bookstore/mobilebff/controller/StatusController.class

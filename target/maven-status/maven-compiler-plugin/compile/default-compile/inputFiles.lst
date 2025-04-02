@@ -1,0 +1,14 @@
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/BookstoreApiApplication.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/controller/BookController.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/controller/CustomerController.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/controller/StatusController.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/dto/BookDTO.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/dto/CustomerDTO.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/entity/Book.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/entity/Customer.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/exception/GlobalExceptionHandler.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/exception/ResourceNotFoundException.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/exception/ValidationException.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/repository/BookRepository.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/repository/CustomerRepository.java
+/Users/richardmunyemana/Downloads/bookstore-api/src/main/java/com/rmunyema/bookstore_api/util/ValidationService.java

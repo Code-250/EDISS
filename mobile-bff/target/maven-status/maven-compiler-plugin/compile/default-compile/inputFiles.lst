@@ -1,0 +1,10 @@
+/Users/richardmunyemana/Downloads/bookstore-api/mobile-bff/src/main/java/com/bookstore/mobilebff/MobileBffApplication.java
+/Users/richardmunyemana/Downloads/bookstore-api/mobile-bff/src/main/java/com/bookstore/mobilebff/controller/BookController.java
+/Users/richardmunyemana/Downloads/bookstore-api/mobile-bff/src/main/java/com/bookstore/mobilebff/controller/CustomerController.java
+/Users/richardmunyemana/Downloads/bookstore-api/mobile-bff/src/main/java/com/bookstore/mobilebff/controller/StatusController.java
+/Users/richardmunyemana/Downloads/bookstore-api/mobile-bff/src/main/java/com/bookstore/mobilebff/dto/BookDTO.java
+/Users/richardmunyemana/Downloads/bookstore-api/mobile-bff/src/main/java/com/bookstore/mobilebff/dto/CustomerDTO.java
+/Users/richardmunyemana/Downloads/bookstore-api/mobile-bff/src/main/java/com/bookstore/mobilebff/filter/JwtAuthenticationFilter.java
+/Users/richardmunyemana/Downloads/bookstore-api/mobile-bff/src/main/java/com/bookstore/mobilebff/service/BookService.java
+/Users/richardmunyemana/Downloads/bookstore-api/mobile-bff/src/main/java/com/bookstore/mobilebff/service/CustomerService.java
+/Users/richardmunyemana/Downloads/bookstore-api/mobile-bff/src/main/java/com/bookstore/mobilebff/util/JwtUtil.java

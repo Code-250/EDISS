@@ -1,6 +1,6 @@
 FROM maven:3.8-openjdk-17 AS build
 WORKDIR /app
-COPY pom.xml .
+COPY web-bff/pom.xml .
 # Download dependencies first (for better caching)
 RUN mvn dependency:go-offline
 COPY src ./src

@@ -1,0 +1,5 @@
+bookservice/controller/BookController.class
+bookservice/BookServiceApplication.class
+bookservice/dto/BookDTO.class
+bookservice/repository/BookRepository.class
+bookservice/entity/Book.class
