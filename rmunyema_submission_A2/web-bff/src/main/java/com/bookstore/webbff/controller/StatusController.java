@@ -11,6 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/status")
 public class StatusController {
 
+    /*
+     * This endpoint checks the status of the application.
+     * It returns a simple "OK" response with a 200 OK status.
+     * The @GetMapping annotation is used to map HTTP GET requests to this method.
+     * The @RequestMapping annotation is used to specify the base URL for this
+     * controller.
+     */
     @GetMapping
     public ResponseEntity<String> getStatus() {
         HttpHeaders headers = new HttpHeaders();

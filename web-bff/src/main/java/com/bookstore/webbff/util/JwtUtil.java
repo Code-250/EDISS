@@ -1,48 +1,64 @@
 package com.bookstore.webbff.util;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.Base64;
+import java.util.HashSet;
+import java.util.Set;
 
+@Component
 public class JwtUtil {
-    private static final List<String> VALID_SUBS = Arrays.asList("starlord", "gamora", "drax", "rocket", "groot");
-    private static final String VALID_ISS = "emu.edu";
 
-    public static Claims validateJwt(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
-        }
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Set<String> VALID_SUBJECTS = new HashSet<>();
 
-        String token = authHeader.substring(7);
+    static {
+        VALID_SUBJECTS.add("starlord");
+        VALID_SUBJECTS.add("gamora");
+        VALID_SUBJECTS.add("drax");
+        VALID_SUBJECTS.add("rocket");
+        VALID_SUBJECTS.add("groot");
+    }
+
+    @Value("${jwt.issuer:cmu.edu}")
+    private String expectedIssuer;
+
+    public boolean validateToken(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            String sub = claims.getSubject();
-            if (sub == null || !VALID_SUBS.contains(sub)) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid 'sub' claim");
+            String[] parts = token.split("\\.");
+            if (parts.length != 3) {
+                return false;
             }
 
-            Date exp = claims.getExpiration();
-            if (exp == null || exp.before(new Date())) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token expired");
+            // Decode the payload (second part of the token)
+            String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
+            JsonNode payloadJson = objectMapper.readTree(payload);
+
+            // Check subject
+            if (!payloadJson.has("sub") || !VALID_SUBJECTS.contains(payloadJson.get("sub").asText())) {
+                return false;
             }
 
-            String iss = claims.getIssuer();
-            if (iss == null || !iss.equals(VALID_ISS)) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid 'iss' claim");
+            // Check expiration
+            if (!payloadJson.has("exp")) {
+                return false;
+            }
+            long expiration = payloadJson.get("exp").asLong();
+            if (expiration * 1000 < System.currentTimeMillis()) {
+                return false;
             }
 
-            return claims;
+            // Check issuer
+            if (!payloadJson.has("iss") || !expectedIssuer.equals(payloadJson.get("iss").asText())) {
+                return false;
+            }
+
+            return true;
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid JWT token");
+            return false;
         }
     }
 }

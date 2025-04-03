@@ -2,11 +2,14 @@ package com.bookstore.webbff.controller;
 
 import com.bookstore.webbff.dto.BookDTO;
 import com.bookstore.webbff.service.BookService;
-import com.bookstore.webbff.util.JwtUtil;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.client.HttpClientErrorException;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/books")
@@ -15,18 +18,37 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @GetMapping("/isbn/{isbn}")
-    public BookDTO getBookByIsbn(@RequestHeader("Authorization") String authHeader,
-                                 @RequestHeader(value = "X-Client-Type", required = false) String clientType,
-                                 @PathVariable("isbn") String isbn) {
-        validateHeaders(authHeader, clientType);
-        return bookService.getBookByIsbn(isbn);
+    @GetMapping({"/isbn/{isbn}", "/{isbn}"})
+    public ResponseEntity<BookDTO> getBookByIsbn(@PathVariable String isbn) {
+        try {
+            ResponseEntity<BookDTO> foundBook = bookService.getBook(isbn);
+            return ResponseEntity.status(HttpStatus.OK).body(foundBook.getBody());
+        } catch (HttpClientErrorException.NotFound e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    private void validateHeaders(String authHeader, String clientType) {
-        if (clientType == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "X-Client-Type header is required");
+    @PostMapping
+    public ResponseEntity<?> addBook(@Valid @RequestBody BookDTO bookDTO) {
+        try {
+            ResponseEntity<?> createdBook = bookService.createBook(bookDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
+        } catch (HttpClientErrorException.UnprocessableEntity e) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Map.of("message", "This ISBN already exists in the system."));
+        }catch (HttpClientErrorException.BadRequest e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        JwtUtil.validateJwt(authHeader);
+    }
+
+    @PutMapping("/{isbn}")
+    public ResponseEntity<BookDTO> updateBook(@PathVariable String isbn, @Valid @RequestBody BookDTO bookDTO) {
+        try{
+            ResponseEntity<BookDTO> updatedBook = bookService.updateBook(isbn, bookDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedBook.getBody());
+        }catch (HttpClientErrorException.UnprocessableEntity e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch (HttpClientErrorException.BadRequest e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 }

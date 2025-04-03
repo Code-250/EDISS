@@ -17,8 +17,6 @@ import java.util.Set;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final Set<String> MOBILE_CLIENT_TYPES = new HashSet<>(Arrays.asList("iOS", "Android"));
-
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -40,14 +38,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // For mobile BFF, verify the client type is iOS or Android
-        if (!MOBILE_CLIENT_TYPES.contains(clientType)) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Invalid X-Client-Type for Mobile BFF. Expected iOS or Android");
-            return;
-        }
+        // For web BFF, verify the client type is "Web"
+        // For mobile BFF, verify the client type is "iOS" or "Android"
+        // This validation depends on which BFF service this filter is in
 
-        // Check for Authorization header
+        // Check for Authorization header - THIS IS WHERE THE 401 SHOULD BE USED
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -55,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Extract and validate the token
+        // Extract and validate the token - THIS SHOULD ALSO RETURN 401
         String token = authHeader.substring(7);
         if (!jwtUtil.validateToken(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
