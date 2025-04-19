@@ -1,0 +1,10 @@
+customerservice/dto/KafkaResponseDTO.class
+customerservice/util/ValidationService.class
+customerservice/service/KafkaProducerService.class
+customerservice/repository/CustomerRepository.class
+customerservice/dto/CustomerDTO.class
+customerservice/controller/CustomerController.class
+customerservice/config/OpenApiConfig.class
+customerservice/controller/StatusController.class
+customerservice/entity/Customer.class
+customerservice/CustomerServiceApplication.class

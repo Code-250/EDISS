@@ -1,0 +1,7 @@
+crmservice/config/SwaggerConfig.class
+crmservice/entity/Customer.class
+crmservice/service/EmailService.class
+crmservice/kafka/CustomerEventConsumer.class
+crmservice/config/KafkaConfig.class
+crmservice/CrmServiceApplication.class
+crmservice/controller/CrmController.class

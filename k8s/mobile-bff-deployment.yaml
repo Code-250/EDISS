@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mobile-bff
+  namespace: bookstore-ns
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mobile-bff
+  template:
+    metadata:
+      labels:
+        app: mobile-bff
+    spec:
+      containers:
+        - name: mobile-bff
+          image: code250/mobilebffservice:mobile
+          imagePullPolicy: Always
+          env:
+            - name: CUSTOMER_BACKEND_SERVICES_BASE_URL
+              value: "http://customer-service:3000"
+            - name: BOOK_BACKEND_SERVICES_BASE_URL
+              value: "http://book-service:3000"
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10

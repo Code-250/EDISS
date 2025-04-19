@@ -1,0 +1,10 @@
+/Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/CustomerServiceApplication.java
+/Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/config/OpenApiConfig.java
+/Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/controller/CustomerController.java
+/Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/controller/StatusController.java
+/Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/dto/CustomerDTO.java
+/Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/dto/KafkaResponseDTO.java
+/Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/entity/Customer.java
+/Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/repository/CustomerRepository.java
+/Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/service/KafkaProducerService.java
+/Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/util/ValidationService.java

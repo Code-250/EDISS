@@ -1,0 +1,11 @@
+/Users/richardmunyemana/Downloads/bookstore/web-bff/src/main/java/com/bookstore/webbff/WebBffApplication.java
+/Users/richardmunyemana/Downloads/bookstore/web-bff/src/main/java/com/bookstore/webbff/config/SwaggerConfig.java
+/Users/richardmunyemana/Downloads/bookstore/web-bff/src/main/java/com/bookstore/webbff/controller/BookController.java
+/Users/richardmunyemana/Downloads/bookstore/web-bff/src/main/java/com/bookstore/webbff/controller/CustomerController.java
+/Users/richardmunyemana/Downloads/bookstore/web-bff/src/main/java/com/bookstore/webbff/controller/StatusController.java
+/Users/richardmunyemana/Downloads/bookstore/web-bff/src/main/java/com/bookstore/webbff/dto/BookDTO.java
+/Users/richardmunyemana/Downloads/bookstore/web-bff/src/main/java/com/bookstore/webbff/dto/CustomerDTO.java
+/Users/richardmunyemana/Downloads/bookstore/web-bff/src/main/java/com/bookstore/webbff/filter/JwtAuthenticationFilter.java
+/Users/richardmunyemana/Downloads/bookstore/web-bff/src/main/java/com/bookstore/webbff/service/BookService.java
+/Users/richardmunyemana/Downloads/bookstore/web-bff/src/main/java/com/bookstore/webbff/service/CustomerService.java
+/Users/richardmunyemana/Downloads/bookstore/web-bff/src/main/java/com/bookstore/webbff/util/JwtUtil.java

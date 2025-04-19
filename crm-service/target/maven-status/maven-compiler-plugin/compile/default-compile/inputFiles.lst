@@ -1,0 +1,7 @@
+/Users/richardmunyemana/Downloads/bookstore/crm-service/src/main/java/crmservice/CrmServiceApplication.java
+/Users/richardmunyemana/Downloads/bookstore/crm-service/src/main/java/crmservice/config/KafkaConfig.java
+/Users/richardmunyemana/Downloads/bookstore/crm-service/src/main/java/crmservice/config/SwaggerConfig.java
+/Users/richardmunyemana/Downloads/bookstore/crm-service/src/main/java/crmservice/controller/CrmController.java
+/Users/richardmunyemana/Downloads/bookstore/crm-service/src/main/java/crmservice/entity/Customer.java
+/Users/richardmunyemana/Downloads/bookstore/crm-service/src/main/java/crmservice/kafka/CustomerEventConsumer.java
+/Users/richardmunyemana/Downloads/bookstore/crm-service/src/main/java/crmservice/service/EmailService.java

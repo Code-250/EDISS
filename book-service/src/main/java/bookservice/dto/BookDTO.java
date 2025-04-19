@@ -1,0 +1,114 @@
+package bookservice.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import bookservice.entity.Book;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+
+/**
+ * Data Transfer Object (DTO) for Book entity.
+ * Used for transferring book data between the client and server.
+ */
+public class BookDTO {
+    @NotNull
+    @JsonProperty("ISBN") // Changed to "ISBN" for JSON serialization
+    private String isbn;
+    @NotNull
+    private String title;
+    @NotNull
+    @JsonProperty("Author") // Changed to "Author" for JSON serialization
+    private String author;
+    @NotNull
+    private String description;
+    @NotNull
+    private String genre;
+    @NotNull
+    @DecimalMin("0.00")
+    @Digits(integer = 10, fraction = 2) // Changed to allow up to 10 digits before the decimal and 2 after
+    private Double price;
+    @NotNull
+    private Integer quantity;
+
+    /**
+     * Default constructor for BookDTO.
+     * Required for JSON deserialization.
+     */
+    public BookDTO() {
+    }
+
+    /**
+     * Constructor for BookDTO.
+     * Converts a Book entity to a BookDTO.
+     * 
+     * @param Book The book entity to convert to DTO
+     */
+    public BookDTO(Book book) {
+        this.isbn = book.getIsbn();
+        this.title = book.getTitle();
+        this.author = book.getAuthor();
+        this.description = book.getDescription();
+        this.genre = book.getGenre();
+        this.price = book.getPrice();
+        this.quantity = book.getQuantity();
+    }
+
+    // Getters
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    // Setters
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+}

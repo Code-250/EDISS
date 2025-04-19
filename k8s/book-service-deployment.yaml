@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-service
+  namespace: bookstore-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: book-service
+  template:
+    metadata:
+      labels:
+        app: book-service
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - book-service
+      containers:
+      - name: book-service
+        image: code250/bookservice:book
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: RECOMMENDATION_SERVICE_URL
+          value: http://18.118.230.221
+        - name: DB_USERNAME
+          value: root
+        - name: DB_PASSWORD
+          value: R1ch@rd@!Munye
+        - name: DB_NAME
+          value: bookstore
+        - name: DB_HOST
+          value: "host.docker.internal"
+        - name: DB_PORT
+          value: "3306"
+        livenessProbe:
+          httpGet:
+            path: /status
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
