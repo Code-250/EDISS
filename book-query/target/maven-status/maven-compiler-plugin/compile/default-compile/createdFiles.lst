@@ -1,0 +1,15 @@
+bookqueryservice/dto/RecommendationResponseDto.class
+bookqueryservice/repository/BookRepository.class
+bookqueryservice/dto/RecommendationDto.class
+bookqueryservice/dto/RecommendationDto$RecommendationDtoBuilder.class
+bookqueryservice/controller/BookController.class
+bookqueryservice/config/MongoConfig.class
+bookqueryservice/entity/RelatedBook.class
+bookqueryservice/dto/BookDTO.class
+bookqueryservice/controller/StatusController.class
+bookqueryservice/service/RecommendationService.class
+bookqueryservice/entity/Book.class
+bookqueryservice/dto/RecommendationResponseDto$RecommendationResponseDtoBuilder.class
+bookqueryservice/service/RecommendationService$CircuitOpenException.class
+bookqueryservice/BookQueryApplication.class
+bookqueryservice/config/OpenApiConfig.class

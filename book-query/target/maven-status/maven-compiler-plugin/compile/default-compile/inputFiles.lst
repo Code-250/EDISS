@@ -1,0 +1,12 @@
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/BookQueryApplication.java
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/config/MongoConfig.java
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/config/OpenApiConfig.java
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/controller/BookController.java
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/controller/StatusController.java
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/dto/BookDTO.java
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/dto/RecommendationDto.java
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/dto/RecommendationResponseDto.java
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/entity/Book.java
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/entity/RelatedBook.java
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/repository/BookRepository.java
+/Users/richardmunyemana/Downloads/bookstore/book-query/src/main/java/bookqueryservice/service/RecommendationService.java

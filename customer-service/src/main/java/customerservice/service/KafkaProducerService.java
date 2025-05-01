@@ -1,50 +1,62 @@
 package customerservice.service;
 
-import customerservice.dto.CustomerDTO;
 import customerservice.entity.Customer;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-
+/*
+ * KafkaProducerService.java
+ * the KafkaProducerService class is responsible for sending customer events to a Kafka topic.
+ * It uses the KafkaTemplate to send messages asynchronously.
+ * The class is annotated with @Service, indicating that it is a Spring service component.
+ * The class is configured to use a Kafka topic specified in the application properties.
+ * The sendCustomerEvent method sends a Customer object to the Kafka topic.
+ * It handles exceptions that may occur during the sending process and logs the results.
+ * The class is designed to be used in a Spring Boot application with Kafka integration.
+ */
 @Service
 public class KafkaProducerService {
     private static final Logger logger = LoggerFactory.getLogger(KafkaProducerService.class);
-
     @Value("${kafkaTopic}")
-    private String kafkaTopic;
+    private String KAFKA_TOPIC;
 
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
+    // Constructor for KafkaProducerService
+    // It initializes the KafkaTemplate used for sending messages to Kafka.
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Bean
-    public ProducerFactory<String, Object> kafkaProducerConfig(){
-        Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "3.129.102.184:9092,18.118.230.221:9093,3.130.6.49:9094");
-        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-
-
-        return new DefaultKafkaProducerFactory<>(configProps);
+    public KafkaProducerService(KafkaTemplate<String, Object> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
     }
 
-    @Bean
-    public KafkaTemplate<String, Object> kafkaTemplate(){
-        return new KafkaTemplate<>(kafkaProducerConfig());
-    }
+    /*
+     * sendCustomerEvent method
+     * This method sends a Customer object to the Kafka topic.
+     * It uses the KafkaTemplate to send the message asynchronously.
+     * The method handles exceptions that may occur during the sending process and
+     * logs the results.
+     * 
+     * @param customer The Customer object to be sent to the Kafka topic.
+     * It is expected to be a JSON object.
+     * 
+     * @return void
+     * 
+     * @throws Exception if an error occurs while sending the message.
+     */
+    public void sendCustomerEvent(Customer customer) {
+        try {
+            logger.info("Sending customer to Kafka topic: {}", KAFKA_TOPIC);
 
+            // Send directly without a key
+            kafkaTemplate.send(KAFKA_TOPIC, customer).get(); // Wait for send to complete
+
+            logger.info("Successfully sent customer to Kafka");
+        } catch (Exception e) {
+            logger.error("Failed to send customer to Kafka", e);
+        }
+    }
 }

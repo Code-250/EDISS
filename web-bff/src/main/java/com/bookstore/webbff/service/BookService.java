@@ -1,14 +1,20 @@
 package com.bookstore.webbff.service;
 
 import com.bookstore.webbff.dto.BookDTO;
+import com.bookstore.webbff.dto.RecommendationResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 /**
  * BookService is a service class that handles operations related to books.
@@ -18,8 +24,10 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class BookService {
 
+    private static final Logger log = LoggerFactory.getLogger(BookService.class);
     private final RestTemplate restTemplate;
-    private final String baseUrl;
+    private final String commandUrl;
+    private final String queryUrl;
 
     /**
      * Constructor for BookService.
@@ -29,9 +37,10 @@ public class BookService {
      */
     @Autowired
     public BookService(RestTemplate restTemplate,
-            @Value("http://book-service:3000") String baseUrl) {
+            @Value("http://book-command:3000") String commandUrl, @Value("http://book-query:3000") String queryUrl) {
         this.restTemplate = restTemplate;
-        this.baseUrl = baseUrl;
+        this.commandUrl = commandUrl;
+        this.queryUrl = queryUrl;
     }
 
     /**
@@ -43,7 +52,7 @@ public class BookService {
      */
     public ResponseEntity<BookDTO> getBook(String isbn) {
         try {
-            return restTemplate.getForEntity(baseUrl + "/books/" + isbn, BookDTO.class);
+            return restTemplate.getForEntity(queryUrl + "/books/" + isbn, BookDTO.class);
         } catch (HttpClientErrorException e) {
             throw e; // Re-throw to let controller handle it
         } catch (Exception e) {
@@ -59,13 +68,18 @@ public class BookService {
      * @return A ResponseEntity containing the BookDTO if found, or an error
      *         response if not found.
      */
-    public ResponseEntity<BookDTO> getRelatedBooks(String isbn) {
+    public ResponseEntity<List<RecommendationResponseDto>> getRelatedBooks(String isbn) {
         try {
-            return restTemplate.getForEntity(baseUrl + "/books/" + isbn + "/related-books", BookDTO.class);
-        } catch (HttpClientErrorException e) {
-            throw e; // Re-throw to let controller handle it
+            return restTemplate.exchange(
+                    queryUrl + "/books/" + isbn + "/related-books",
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<RecommendationResponseDto>>() {}
+            );
+
         } catch (Exception e) {
-            throw new RuntimeException("Error creating book", e);
+            // Just rethrow with the same exception type for the controller to handle
+            throw e;
         }
 
     }
@@ -79,11 +93,13 @@ public class BookService {
      */
     public ResponseEntity<BookDTO> createBook(BookDTO bookDTO) {
         try {
-            return restTemplate.postForEntity(baseUrl + "/books", bookDTO, BookDTO.class);
+            log.info("received request to create book {}", bookDTO);
+            return restTemplate.postForEntity(commandUrl + "/cmd/books", bookDTO, BookDTO.class);
         } catch (HttpClientErrorException e) {
             throw e; // Re-throw to let controller handle it
         } catch (Exception e) {
-            throw new RuntimeException("Error creating book", e);
+            log.info("received request to create book {}", bookDTO);
+            throw new RuntimeException("Error creating book ====>", e );
         }
     }
 
@@ -98,7 +114,7 @@ public class BookService {
     public ResponseEntity<BookDTO> updateBook(String isbn, BookDTO bookDTO) {
         try {
             return restTemplate.exchange(
-                    baseUrl + "/books/" + isbn,
+                    commandUrl + "/cmd/books/" + isbn,
                     HttpMethod.PUT,
                     new HttpEntity<>(bookDTO),
                     BookDTO.class);

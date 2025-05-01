@@ -1,0 +1,10 @@
+/Users/richardmunyemana/Downloads/bookstore/book-sync-service/src/main/java/booksyncservice/BookSyncApplication.java
+/Users/richardmunyemana/Downloads/bookstore/book-sync-service/src/main/java/booksyncservice/config/AppConfig.java
+/Users/richardmunyemana/Downloads/bookstore/book-sync-service/src/main/java/booksyncservice/config/OpenApiConfig.java
+/Users/richardmunyemana/Downloads/bookstore/book-sync-service/src/main/java/booksyncservice/controller/SyncController.java
+/Users/richardmunyemana/Downloads/bookstore/book-sync-service/src/main/java/booksyncservice/dto/BookDTO.java
+/Users/richardmunyemana/Downloads/bookstore/book-sync-service/src/main/java/booksyncservice/model/MongoBook.java
+/Users/richardmunyemana/Downloads/bookstore/book-sync-service/src/main/java/booksyncservice/model/RdsBook.java
+/Users/richardmunyemana/Downloads/bookstore/book-sync-service/src/main/java/booksyncservice/repository/MongoBookRepository.java
+/Users/richardmunyemana/Downloads/bookstore/book-sync-service/src/main/java/booksyncservice/repository/RdsBookRepository.java
+/Users/richardmunyemana/Downloads/bookstore/book-sync-service/src/main/java/booksyncservice/service/DirectMongoService.java

@@ -1,45 +1,57 @@
 package bookservice.service;
 
-import bookservice.entity.Book;
-import bookservice.entity.RelatedBook;
-import bookservice.repository.BookRepository;
+import bookservice.dto.RecommendationDto;
+import bookservice.dto.RecommendationResponseDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * This class is a Spring Boot service that handles operations related to
+ * recommendations.
+ * It interacts with a recommendation engine to retrieve related books based on
+ * ISBN.
+ */
 @Service
 public class RecommendationService {
     private static final Logger logger = LoggerFactory.getLogger(RecommendationService.class);
 
+    // Timeout for the recommendation service in seconds
+    // This is the timeout for the RestTemplate
     private static final int TIMEOUT_SECONDS = 3;
+    // Name of the circuit breaker
     private static final String CIRCUIT_BREAKER_NAME = "recommendationService";
 
-    @Autowired
-    private BookRepository bookRepository;
-
-    private String recommendationServiceUrl = "http://18.118.230.221";
+    // URL of the recommendation service
+    @Value("${recommendation.service.url}")
+    private String recommendationServiceUrl;
 
     private final RestTemplate restTemplate;
 
+    /**
+     * Constructor for RecommendationService.
+     * It initializes the RestTemplate with a timeout configuration.
+     *
+     * @param restTemplateBuilder The RestTemplateBuilder to create the RestTemplate
+     *                            instance.
+     */
     public RecommendationService(RestTemplateBuilder restTemplateBuilder) {
-        this.restTemplate = restTemplateBuilder.connectTimeout(Duration.ofSeconds(TIMEOUT_SECONDS)).readTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+        this.restTemplate = restTemplateBuilder.connectTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+                .readTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
                 .build();
     }
 
@@ -53,34 +65,48 @@ public class RecommendationService {
      */
     @CircuitBreaker(name = CIRCUIT_BREAKER_NAME, fallbackMethod = "getRelatedBooksFallback")
     @TimeLimiter(name = CIRCUIT_BREAKER_NAME, fallbackMethod = "getRelatedBooksFallback")
-    public CompletableFuture<?> getRelatedBooks(String isbn) {
+    public CompletableFuture<List<RecommendationResponseDto>> getRelatedBooks(String isbn) {
         return CompletableFuture.supplyAsync(() -> {
-            // First check if the book exists
-            Optional<Book> bookOpt = bookRepository.findById(isbn);
-            if (bookOpt.isEmpty()) {
-                logger.info("Book with ISBN {} not found in database", isbn);
-                return List.of(); // Return empty list, will result in 204 response
-            }
-
             try {
-                String url = recommendationServiceUrl + "/recommendations?isbn=" + isbn;
+                // Build the URL for the recommendation service
+                String url = recommendationServiceUrl + "/recommended-titles/isbn/" + isbn;
                 logger.info("Calling recommendation service: {}", url);
 
-                try {
-                    ResponseEntity<RelatedBook[]> response = restTemplate.getForEntity(url, RelatedBook[].class);
+                // Make the request to the recommendation service
+                ResponseEntity<RecommendationDto[]> response = restTemplate.getForEntity(url,
+                        RecommendationDto[].class);
 
-                    RelatedBook[] books = response.getBody();
-                    return books != null ? enrichRecommendations(books) : List.of();
-
-                } catch (HttpClientErrorException e) {
-                    if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        logger.info("Recommendation service returned 404 for ISBN: {}", isbn);
-                        return List.of(); // Return empty list, will result in 204 response
-                    }
-                    throw e;
+                // Check if we got a valid response with content
+                if (response.getBody() == null) {
+                    logger.info("Recommendation service returned null body for ISBN: {}", isbn);
+                    return Collections.emptyList();
                 }
 
-            } catch (Exception e) {
+                // Transform recommendations and exclude publisher information
+                List<RecommendationResponseDto> recommendations = new ArrayList<>();
+                for (RecommendationDto dto : response.getBody()) {
+                    RecommendationResponseDto enriched = new RecommendationResponseDto();
+
+                    // Set core fields, using fallbacks for missing values
+                    enriched.setIsbn(dto.getIsbn() != null ? dto.getIsbn() : isbn);
+                    enriched.setTitle(dto.getTitle() != null ? dto.getTitle() : "");
+                    enriched.setAuthors(dto.getAuthors() != null ? dto.getAuthors() : "");
+
+                    // Publisher field is explicitly excluded
+
+                    recommendations.add(enriched);
+                }
+
+                return recommendations;
+
+            } catch (HttpClientErrorException e) {
+                if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                    logger.info("Recommendation service returned 404 for ISBN: {}", isbn);
+                    return Collections.emptyList();
+                }
+                logger.error("HTTP client error from recommendation service: {}", e.getMessage());
+                throw e;
+            } catch (HttpServerErrorException.GatewayTimeout e) {
                 logger.error("Error calling recommendation service", e);
                 throw e;
             }
@@ -109,36 +135,8 @@ public class RecommendationService {
     }
 
     /**
-     * Enhances the recommendation data by filling in any missing details
-     * from our local database when possible
+     * Custom exception to indicate that the circuit is open.
      */
-    private List<RelatedBook> enrichRecommendations(RelatedBook[] recommendations) {
-        List<RelatedBook> enrichedBooks = new ArrayList<>();
-
-        for (RelatedBook relatedBook : recommendations) {
-            String isbn = relatedBook.getISBN();
-
-            // If we have this book in our database, use our data
-            Optional<Book> bookOpt = bookRepository.findById(isbn);
-            if (bookOpt.isPresent()) {
-                Book book = bookOpt.get();
-
-                // Only update fields if they're missing or empty in the recommendation
-                if (relatedBook.getTitle() == null || relatedBook.getTitle().isEmpty()) {
-                    relatedBook.setTitle(book.getTitle());
-                }
-
-                if (relatedBook.getAuthor() == null || relatedBook.getAuthor().isEmpty()) {
-                    relatedBook.setAuthor(book.getAuthor());
-                }
-            }
-
-            enrichedBooks.add(relatedBook);
-        }
-
-        return enrichedBooks;
-    }
-
     public static class CircuitOpenException extends Exception {
         public CircuitOpenException(String message) {
             super(message);

@@ -1,0 +1,10 @@
+booksyncservice/model/RdsBook.class
+booksyncservice/dto/BookDTO.class
+booksyncservice/repository/RdsBookRepository.class
+booksyncservice/repository/MongoBookRepository.class
+booksyncservice/controller/SyncController.class
+booksyncservice/model/MongoBook.class
+booksyncservice/service/DirectMongoService.class
+booksyncservice/BookSyncApplication.class
+booksyncservice/config/OpenApiConfig.class
+booksyncservice/config/AppConfig.class

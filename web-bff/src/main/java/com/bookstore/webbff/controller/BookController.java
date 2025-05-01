@@ -1,6 +1,7 @@
 package com.bookstore.webbff.controller;
 
 import com.bookstore.webbff.dto.BookDTO;
+import com.bookstore.webbff.dto.RecommendationResponseDto;
 import com.bookstore.webbff.service.BookService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +22,6 @@ import java.util.Map;
  * It provides endpoints to get, add, and update book information.
  */
 @RestController
-@RequestMapping("/books")
 @Slf4j
 @Tag(name = "Web BFF API Book", description = "Backend for Frontend API for web clients")
 public class BookController {
@@ -40,7 +39,7 @@ public class BookController {
      * @return A ResponseEntity containing the BookDTO if found, or an error
      *         response if not found.
      */
-    @GetMapping({ "/isbn/{isbn}", "/{isbn}" })
+    @GetMapping({ "/books/isbn/{isbn}", "/books/{isbn}" })
     public ResponseEntity<BookDTO> getBookByIsbn(@PathVariable String isbn) {
         try {
             BookDTO foundBook = bookService.getBook(isbn).getBody();
@@ -52,7 +51,6 @@ public class BookController {
         }
     }
 
-
     /**
      * Retrieves related books by its ISBN.
      *
@@ -60,12 +58,12 @@ public class BookController {
      * @return A ResponseEntity containing the BookDTO if found, or an error
      *         response if not found.
      */
-    @GetMapping({  "/{isbn}/related-books" })
-    public ResponseEntity<BookDTO> getRelatedBooks(@PathVariable String isbn) {
+    @GetMapping({ "/books/{isbn}/related-books" })
+    public ResponseEntity<List<RecommendationResponseDto>> getRelatedBooks(@PathVariable String isbn) {
         try {
 
-            ResponseEntity<BookDTO> foundBook = bookService.getRelatedBooks(isbn);
-            if(foundBook.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
+            ResponseEntity<List<RecommendationResponseDto>> foundBook = bookService.getRelatedBooks(isbn);
+            if (foundBook.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
             return ResponseEntity.status(HttpStatus.OK).body(foundBook.getBody());
@@ -73,7 +71,7 @@ public class BookController {
             return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).build();
         } catch (HttpServerErrorException.ServiceUnavailable e) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        }catch (HttpServerErrorException.InternalServerError e) {
+        } catch (HttpServerErrorException.InternalServerError e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -85,7 +83,7 @@ public class BookController {
      * @return A ResponseEntity containing the created BookDTO or an error response
      *         if the book already exists.
      */
-    @PostMapping
+    @PostMapping("/cmd/books")
     public ResponseEntity<?> addBook(@Valid @RequestBody BookDTO bookDTO) {
         try {
             ResponseEntity<?> createdBook = bookService.createBook(bookDTO);
@@ -98,6 +96,9 @@ public class BookController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (HttpClientErrorException.Unauthorized e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }catch (HttpServerErrorException.InternalServerError e) {
+            log.info("Internal Server Error " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -109,7 +110,7 @@ public class BookController {
      * @return A ResponseEntity containing the updated BookDTO or an error response
      *         if the book is not found.
      */
-    @PutMapping("/{isbn}")
+    @PutMapping("/cmd/books/{isbn}")
     public ResponseEntity<BookDTO> updateBook(@PathVariable String isbn, @Valid @RequestBody BookDTO bookDTO) {
         try {
             ResponseEntity<BookDTO> updatedBook = bookService.updateBook(isbn, bookDTO);

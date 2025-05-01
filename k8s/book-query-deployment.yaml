@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-query
+  namespace: bookstore-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-query
+  template:
+    metadata:
+      labels:
+        app: book-query
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - book-query
+      containers:
+        - name: book-query
+          image: code250/book-query:query
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+           - name: RECOMMENDATION_SERVICE_URL
+             value: http://18.118.230.221
+           - name: MONGODB_URI
+             value: "mongodb+srv://rmunyema:2YxIyuc1VFLQXLPU@assignment4.yvbw3da.mongodb.net/BooksDB"
+           - name: DATABASE_COLLECTION
+             value: books_rmunyema
+           - name: ANDREW_ID
+             value: rmunyema
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 10

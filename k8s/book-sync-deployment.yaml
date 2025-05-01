@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-data-sync
+  namespace: bookstore-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-data-sync
+  template:
+    metadata:
+      labels:
+        app: book-data-sync
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - book-data-sync
+      containers:
+        - name: book-service
+          image: code250/book-sync-service:sync
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: RECOMMENDATION_SERVICE_URL
+              value: http://18.118.230.221
+            - name: DB_USERNAME
+              value: bookstoredb
+            - name: DB_PASSWORD
+              value: R1chardMunye
+            - name: DB_NAME
+              value: bookstore
+            - name: DB_HOST
+              value: "bookstore-db-dev.cluster-cpb64v9elrbe.us-east-1.rds.amazonaws.com"
+            - name: DB_PORT
+              value: "3306"
+            - name: MONGODB_URI
+              value: "mongodb+srv://rmunyema:2YxIyuc1VFLQXLPU@assignment4.yvbw3da.mongodb.net/BooksDB"
+            - name: DATABASE_COLLECTION
+              value: books_rmunyema
+            - name: ANDREW_ID
+              value: rmunyema

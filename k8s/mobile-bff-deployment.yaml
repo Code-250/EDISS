@@ -21,8 +21,10 @@ spec:
           env:
             - name: CUSTOMER_BACKEND_SERVICES_BASE_URL
               value: "http://customer-service:3000"
-            - name: BOOK_BACKEND_SERVICES_BASE_URL
-              value: "http://book-service:3000"
+            - name: BOOK_COMMAND_SERVICES_BASE_URL
+              value: "http://book-command:3000"
+            - name: BOOK_QUERY_SERVICES_BASE_URL
+              value: "http://book-query:3000"
           ports:
             - containerPort: 80
           livenessProbe:

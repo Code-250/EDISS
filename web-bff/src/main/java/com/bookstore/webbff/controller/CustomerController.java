@@ -3,7 +3,6 @@ package com.bookstore.webbff.controller;
 import com.bookstore.webbff.dto.CustomerDTO;
 import com.bookstore.webbff.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,10 +38,7 @@ public class CustomerController {
      * @return A ResponseEntity containing the CustomerDTO if found, or an error
      *         response if not found.
      */
-    @Operation(
-            summary = "Get a customer",
-            description = "Get Customer by Customer Id"
-    )
+    @Operation(summary = "Get a customer", description = "Get Customer by Customer Id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Customer retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Customer Not Found"),
@@ -67,10 +63,7 @@ public class CustomerController {
      * @return A ResponseEntity containing the CustomerDTO if found, or an error
      *         response if not found.
      */
-    @Operation(
-            summary = "Get a customer",
-            description = "Get Customer by Customer user Id"
-    )
+    @Operation(summary = "Get a customer", description = "Get Customer by Customer user Id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Customer retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Customer Not Found"),
@@ -96,10 +89,7 @@ public class CustomerController {
      * @return A ResponseEntity containing the created CustomerDTO or an error
      *         response if the customer already exists.
      */
-    @Operation(
-            summary = "Create a new customer",
-            description = "Registers a new customer and triggers a welcome email"
-    )
+    @Operation(summary = "Create a new customer", description = "Registers a new customer and triggers a welcome email")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Customer created successfully"),
             @ApiResponse(responseCode = "422", description = "Customer Already Exists"),

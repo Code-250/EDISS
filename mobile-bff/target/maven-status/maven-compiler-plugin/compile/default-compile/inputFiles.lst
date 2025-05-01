@@ -5,6 +5,7 @@
 /Users/richardmunyemana/Downloads/bookstore/mobile-bff/src/main/java/com/bookstore/mobilebff/controller/StatusController.java
 /Users/richardmunyemana/Downloads/bookstore/mobile-bff/src/main/java/com/bookstore/mobilebff/dto/BookDTO.java
 /Users/richardmunyemana/Downloads/bookstore/mobile-bff/src/main/java/com/bookstore/mobilebff/dto/CustomerDTO.java
+/Users/richardmunyemana/Downloads/bookstore/mobile-bff/src/main/java/com/bookstore/mobilebff/dto/RecommendationResponseDto.java
 /Users/richardmunyemana/Downloads/bookstore/mobile-bff/src/main/java/com/bookstore/mobilebff/filter/JwtAuthenticationFilter.java
 /Users/richardmunyemana/Downloads/bookstore/mobile-bff/src/main/java/com/bookstore/mobilebff/service/BookService.java
 /Users/richardmunyemana/Downloads/bookstore/mobile-bff/src/main/java/com/bookstore/mobilebff/service/CustomerService.java

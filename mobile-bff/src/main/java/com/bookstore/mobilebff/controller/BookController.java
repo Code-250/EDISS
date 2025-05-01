@@ -1,6 +1,7 @@
 package com.bookstore.mobilebff.controller;
 
 import com.bookstore.mobilebff.dto.BookDTO;
+import com.bookstore.mobilebff.dto.RecommendationResponseDto;
 import com.bookstore.mobilebff.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,15 +11,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -30,7 +30,6 @@ import java.util.Map;
  * The controller also handles exceptions and returns appropriate HTTP responses.
  */
 @RestController
-@RequestMapping("/books")
 @Slf4j
 @Tag(name = "Mobile BFF API", description = "Backend for Frontend API for mobile clients")
 public class BookController {
@@ -66,7 +65,7 @@ public class BookController {
      * 
      * @throws HttpClientErrorException.NotFound if the books are not found.
      */
-    @GetMapping({ "/isbn/{isbn}", "/{isbn}" })
+    @GetMapping({ "/books/isbn/{isbn}", "/books/{isbn}" })
     public ResponseEntity<?> getBookByIsbn(@PathVariable String isbn) {
         try {
             ResponseEntity<BookDTO> foundBook = bookService.getBook(isbn);
@@ -126,7 +125,7 @@ public class BookController {
      * The method uses a try-catch block to handle exceptions that may occur during
      * the book creation process.
      */
-    @PostMapping
+    @PostMapping("/cmd/books")
     public ResponseEntity<?> addBook(@Valid @RequestBody BookDTO bookDTO) {
         try {
             ResponseEntity<BookDTO> createdBook = bookService.createBook(bookDTO);
@@ -172,7 +171,7 @@ public class BookController {
      * 
      * @throws HttpClientErrorException.Unauthorized if the request is unauthorized.
      */
-    @PutMapping("/{isbn}")
+    @PutMapping("/cmd/books/{isbn}")
     public ResponseEntity<?> updateBook(@PathVariable String isbn, @Valid @RequestBody BookDTO bookDTO) {
         try {
             ResponseEntity<BookDTO> updatedBook = bookService.updateBook(isbn, bookDTO);
@@ -203,15 +202,15 @@ public class BookController {
             @ApiResponse(responseCode = "503", description = "Circuit breaker is open"),
             @ApiResponse(responseCode = "504", description = "Recommendation service timed out")
     })
-    @GetMapping("/{isbn}/related-books")
-    public ResponseEntity<?> getRelatedBooks(
+    @GetMapping("/books/{isbn}/related-books")
+    public ResponseEntity<List<RecommendationResponseDto>> getRelatedBooks(
             @Parameter(description = "ISBN of the book to get recommendations for") @PathVariable String isbn) {
         try {
 
-            ResponseEntity<BookDTO> foundBook = bookService.getRelatedBooks(isbn);
+            ResponseEntity<List<RecommendationResponseDto>> foundBook = bookService.getRelatedBooks(isbn);
             if(foundBook.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-            }
+            } 
             return ResponseEntity.status(HttpStatus.OK).body(foundBook.getBody());
 
         } catch (HttpServerErrorException.GatewayTimeout e) {

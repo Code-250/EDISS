@@ -1,12 +1,12 @@
 package bookservice.controller;
 
 import bookservice.dto.BookDTO;
+import bookservice.dto.RecommendationResponseDto;
 import bookservice.entity.Book;
 import bookservice.entity.RelatedBook;
 import bookservice.repository.BookRepository;
 import bookservice.service.RecommendationService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,10 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -135,16 +135,34 @@ public class BookController {
     })
     @GetMapping("/{isbn}/related-books")
     public ResponseEntity<?> getRelatedBooks(@PathVariable String isbn) {
-        try {
-            ResponseEntity<?> response = recommendationService.getRelatedBooks(isbn);
+        logger.info("Getting related books for ISBN: {}", isbn);
 
-            // Simply return the response from the service
-            return response;
-        } catch (HttpServerErrorException.GatewayTimeout e) {
-            return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).build();
-        } catch (HttpServerErrorException.ServiceUnavailable e) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        } catch (HttpServerErrorException.InternalServerError e) {
+        try {
+            List<RecommendationResponseDto> recommendations = recommendationService.getRelatedBooks(isbn).join();
+
+            // Check if the list is empty and return appropriate response
+            if (recommendations.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.ok(recommendations);
+
+        } catch (CompletionException e) {
+            // Unwrap the CompletionException to get the actual cause
+            Throwable cause = e.getCause();
+
+            if (cause instanceof TimeoutException) {
+                logger.error("Recommendation service timed out", cause);
+                return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).build();
+            } else if (cause instanceof RecommendationService.CircuitOpenException) {
+                logger.warn("Circuit is open, returning 503", cause);
+                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+            } else {
+                logger.error("Error getting related books", cause);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch (Exception e) {
+            logger.error("Unexpected error getting related books", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

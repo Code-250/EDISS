@@ -1,14 +1,18 @@
 package com.bookstore.mobilebff.service;
 
 import com.bookstore.mobilebff.dto.BookDTO;
+import com.bookstore.mobilebff.dto.RecommendationResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 /**
  * BookService.java
@@ -20,20 +24,22 @@ import org.springframework.web.client.RestTemplate;
 public class BookService {
 
     private final RestTemplate restTemplate;
-    private final String baseUrl;
+    private final String commandUrl;
+    private final String queryUrl;
 
     /**
      * Constructor for BookService.
      * It initializes the RestTemplate and base URL for the backend service.
      *
      * @param restTemplate The RestTemplate to make HTTP requests.
-     * @param baseUrl      The base URL of the backend service.
+     * @param commandUrl      The base URL of the backend service.
      */
     @Autowired
     public BookService(RestTemplate restTemplate,
-            @Value("http://book-service:3000") String baseUrl) {
+            @Value("http://book-command:3000") String commandUrl, @Value("http://book-query:3000") String queryUrl) {
         this.restTemplate = restTemplate;
-        this.baseUrl = baseUrl;
+        this.commandUrl = commandUrl;
+        this.queryUrl = queryUrl;
     }
 
     /**
@@ -46,15 +52,8 @@ public class BookService {
      */
     public ResponseEntity<BookDTO> getBook(String isbn) {
         try {
-            return restTemplate.getForEntity(baseUrl + "/books/" + isbn, BookDTO.class);
+            return restTemplate.getForEntity(queryUrl + "/books/" + isbn, BookDTO.class);
 
-//            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-//                transformBookForMobile(response.getBody());
-//            }
-
-//            return response;
-        } catch (HttpClientErrorException e) {
-            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error getting book", e);
         }
@@ -69,20 +68,19 @@ public class BookService {
      * @param isbn The ISBN of the book to retrieve.
      * @return ResponseEntity containing the book information and HTTP status code.
      */
-    public ResponseEntity<BookDTO> getRelatedBooks(String isbn) {
+    public ResponseEntity<List<RecommendationResponseDto>> getRelatedBooks(String isbn) {
         try {
-            ResponseEntity<BookDTO> response = restTemplate.getForEntity(baseUrl + "/books/" + isbn + "/related-books",
-                    BookDTO.class);
+            return restTemplate.exchange(
+                    queryUrl + "/books/" + isbn + "/related-books",
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<RecommendationResponseDto>>() {
+                    }
+            );
 
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                transformBookForMobile(response.getBody());
-            }
-
-            return response;
-        } catch (HttpClientErrorException e) {
-            throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Error getting book", e);
+            // Just rethrow with the same exception type for the controller to handle
+             throw e;
         }
 
     }
@@ -98,7 +96,7 @@ public class BookService {
     public ResponseEntity<BookDTO> createBook(BookDTO bookDTO) {
         try {
 
-            return restTemplate.postForEntity(baseUrl + "/books", bookDTO, BookDTO.class);
+            return restTemplate.postForEntity(commandUrl + "/cmd/books", bookDTO, BookDTO.class);
 
         } catch (HttpClientErrorException e) {
             throw e;
@@ -119,7 +117,7 @@ public class BookService {
     public ResponseEntity<BookDTO> updateBook(String isbn, BookDTO bookDTO) {
         try {
             return restTemplate.exchange(
-                    baseUrl + "/books/" + isbn,
+                    commandUrl + "/cmd/books/" + isbn,
                     HttpMethod.PUT,
                     new HttpEntity<>(bookDTO),
                     BookDTO.class);
@@ -130,19 +128,5 @@ public class BookService {
             throw new RuntimeException("Error updating book", e);
         }
 
-    }
-
-    /**
-     * Transform the book information for mobile.
-     * This method modifies the book's genre from "non-fiction" to "3" for mobile
-     * compatibility.
-     *
-     * @param BookDTO The ISBN of the book to delete.
-     * @return ResponseEntity containing the HTTP status code.
-     */
-    private void transformBookForMobile(BookDTO book) {
-        if (book != null && "non-fiction".equalsIgnoreCase(book.getGenre())) {
-            book.setGenre("non-fiction");
-        }
     }
 }

@@ -1,0 +1,8 @@
+bookservice/controller/StatusController.class
+bookservice/controller/BookController.class
+bookservice/BookServiceApplication.class
+bookservice/dto/BookDTO.class
+bookservice/repository/BookRepository.class
+bookservice/config/OpenApiConfig.class
+bookservice/entity/RelatedBook.class
+bookservice/entity/Book.class

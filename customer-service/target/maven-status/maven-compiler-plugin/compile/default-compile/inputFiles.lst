@@ -1,4 +1,5 @@
 /Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/CustomerServiceApplication.java
+/Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/config/KafkaConfig.java
 /Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/config/OpenApiConfig.java
 /Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/controller/CustomerController.java
 /Users/richardmunyemana/Downloads/bookstore/customer-service/src/main/java/customerservice/controller/StatusController.java

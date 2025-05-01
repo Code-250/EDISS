@@ -1,4 +1,5 @@
 customerservice/dto/KafkaResponseDTO.class
+customerservice/config/KafkaConfig.class
 customerservice/util/ValidationService.class
 customerservice/service/KafkaProducerService.class
 customerservice/repository/CustomerRepository.class
