@@ -1,4 +1,4 @@
-http://a03d66537f59a486585d59bcd3a5fdda-70523356.us-east-1.elb.amazonaws.com:80
-http://aeb08088fef994695bcade967984137e-466514255.us-east-1.elb.amazonaws.com:80
+http://a75de64c1fd0b4dc69c5c68e197596ba-1677573621.us-east-1.elb.amazonaws.com:80
+http://a078864905a65432da0f0d48de0871b7-31956052.us-east-1.elb.amazonaws.com:80
 rmunyema
 richmunye@gmail.com

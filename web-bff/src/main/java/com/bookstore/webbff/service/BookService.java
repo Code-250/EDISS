@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -124,5 +125,48 @@ public class BookService {
             throw new RuntimeException("Error updating book", e);
         }
 
+    }
+
+
+
+    /**
+     * Search books by keyword
+     * @param keyword The search term to look for in book titles, authors, descriptions, etc.
+     * @return A response containing a list of books matching the search criteria
+     */
+    public ResponseEntity<List<BookDTO>> searchBooksByKeyword(String keyword) {
+        try {
+            // Build the URL with the keyword parameter
+            String url = UriComponentsBuilder.fromHttpUrl(queryUrl + "/books")
+                    .queryParam("keyword", keyword)
+                    .toUriString();
+
+            // Log the outgoing request
+            log.info("Searching books with keyword: {}", keyword);
+
+            // Make the request to the book service
+            // We use exchange instead of getForEntity because we need to specify the return type as a List
+            ResponseEntity<List<BookDTO>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<BookDTO>>() {
+                    }
+            );
+
+            // Log the response
+            log.info("Found {} books matching keyword: {}",
+                    response.getBody() != null ? response.getBody().size() : 0,
+                    keyword);
+
+            return response;
+        } catch (HttpClientErrorException e) {
+            log.error("HTTP error when searching books by keyword {}: {} - {}",
+                    keyword, e.getStatusCode(), e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Error searching books by keyword {}: {}", keyword, e.getMessage());
+            throw new RuntimeException("Error searching books", e);
+        }
     }
 }

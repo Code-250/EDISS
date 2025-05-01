@@ -222,4 +222,35 @@ public class BookController {
         }
 
     }
+
+
+    /**
+     * Endpoint for searching books by keyword
+     * @param keyword The search term provided as a request parameter
+     * @return List of books matching the search criteria
+     */
+    @GetMapping("/books")
+    public ResponseEntity<List<BookDTO>> searchBooks(@RequestParam String keyword) {
+        log.info("Received request to search books with keyword: {}", keyword);
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            log.warn("Empty keyword provided for search");
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            // Call the service method that makes the actual API call
+            return bookService.searchBooksByKeyword(keyword);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                log.info("No books found matching keyword: {}", keyword);
+                return ResponseEntity.noContent().build();
+            }
+            log.error("Error from book service: {}", e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).build();
+        } catch (Exception e) {
+            log.error("Error processing search request: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
